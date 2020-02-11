@@ -1939,19 +1939,20 @@ impl Node {
                 .traverse_preorder(ShadowIncluding::Yes)
                 .filter_map(DomRoot::downcast::<Element>)
             {
-                // Step 7.7.2.
-                if descendant.is_connected() {
-                    if descendant.get_custom_element_definition().is_some() {
+                // Step 7.7.2, modified (see issue number [[PSHAUGHN MAKE AN ISSUE]])
+                if descendant.get_custom_element_definition().is_some()
+                {
+		    if descendant.is_connected() {
                         // Step 7.7.2.1.
                         ScriptThread::enqueue_callback_reaction(
                             &*descendant,
                             CallbackReaction::Connected,
                             None,
                         );
-                    } else {
-                        // Step 7.7.2.2.
-                        try_upgrade_element(&*descendant);
                     }
+                } else {
+                    // Step 7.7.2.2, but also for non-custom non-connected
+                    try_upgrade_element(&*descendant);
                 }
             }
         }
