@@ -1939,11 +1939,9 @@ impl Node {
                 .traverse_preorder(ShadowIncluding::Yes)
                 .filter_map(DomRoot::downcast::<Element>)
             {
-                // Step 7.7.2, modified (see issue number [[PSHAUGHN MAKE AN ISSUE]])
-                if descendant.get_custom_element_definition().is_some()
-                {
-		    if descendant.is_connected() {
-                        // Step 7.7.2.1.
+                // Step 7.7.2, whatwg/dom#833
+                if descendant.get_custom_element_definition().is_some() {
+                    if descendant.is_connected() {
                         ScriptThread::enqueue_callback_reaction(
                             &*descendant,
                             CallbackReaction::Connected,
@@ -1951,7 +1949,6 @@ impl Node {
                         );
                     }
                 } else {
-                    // Step 7.7.2.2, but also for non-custom non-connected
                     try_upgrade_element(&*descendant);
                 }
             }
